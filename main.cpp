@@ -1,35 +1,35 @@
 #include <cstdio>
-#include "bitmap_image.hpp"
+#define STB_IMAGE_IMPLEMENTATION
 
-int main()
-{
-   bitmap_image image("input.bmp");
+// Substituir pelo caminho do computador que vai executar o projeto
+#include "/home/aluno/Desktop/andrey/stb-master/stb_image.h"
+// Caminho do Linux
 
-   if (!image)
-   {
-      printf("Error - Failed to open: input.bmp\n");
+int main() {
+   const char *filename = "./imagens/indoali.bmp";
+   int width, height, channels;
+
+   // Carregar a imagem usando STB Image
+   unsigned char *image_data = stbi_load(filename, &width, &height, &channels, 0);
+
+   if (!image_data) {
+      printf("Erro ao abrir imagem: %s\n", filename);
       return 1;
    }
 
    unsigned int total_number_of_pixels = 0;
 
-   const unsigned int height = image.height();
-   const unsigned int width  = image.width();
-
-   for (std::size_t y = 0; y < height; ++y)
-   {
-      for (std::size_t x = 0; x < width; ++x)
-      {
-         rgb_t colour;
-
-         image.get_pixel(x, y, colour);
-
-         if (colour.red >= 111)
-            total_number_of_pixels++;
-      }
+   // Iterar sobre os pixels e contar os que têm componente vermelha maior ou igual a 111
+   for (int i = 0; i < width * height * channels; i += channels) {
+      unsigned char red = image_data[i];
+      if (red >= 111)
+         total_number_of_pixels++;
    }
 
-   printf("Number of pixels with red >= 111: %d\n",total_number_of_pixels);
+   // Liberar a memória alocada para a imagem
+   stbi_image_free(image_data);
+
+   printf("Numero de pixels vermelhos >= 111: %d\n", total_number_of_pixels);
 
    return 0;
 }
