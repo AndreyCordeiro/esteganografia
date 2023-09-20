@@ -18,7 +18,7 @@ Projetinho de Esteganografia desenvolvido para a matéria **Tópicos em Computa�
 <h3>Compilador gcc do Linux</h3>
 
 ```bash
-g++ main.cpp -o main.exe
+g++ main.cpp -o main.exe -Wall
 ```
 ```bash
 ./main.exe
