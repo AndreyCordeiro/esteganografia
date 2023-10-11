@@ -1,4 +1,8 @@
 #include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "/home/aluno/Desktop/andrey/esteganografia/stb-master/stb_image.h" // Caminho do Linux
 
@@ -6,10 +10,6 @@
 #include "/home/aluno/Desktop/andrey/esteganografia/stb-master/stb_image_write.h" // Caminho do Linux
 
 // Substituir pelo caminho do computador que vai executar o projeto
-
-#include <cstdlib>
-#include <ctime>
-#include <iostream>
 
 using namespace std;
 
@@ -29,7 +29,7 @@ inline T set_bits(const T v, const uint32_t bstart, const uint32_t blength, cons
    return (v & ~mask) | (bits << bstart);
 }
 
-void esconder_imagem(const char *texto, int width, int height, int channels, unsigned char *image_data)
+void esconder_imagem(char *texto, int width, int height, int channels, unsigned char *image_data)
 {
    int texto_len = strlen(texto);
    int texto_index = 0;
@@ -38,7 +38,6 @@ void esconder_imagem(const char *texto, int width, int height, int channels, uns
    srand(tempo);
    cout << "Semente: " << tempo << endl;
 
-   // Iterar sobre os pixels e esconder o texto nos canais vermelho, verde e azul
    for (int i = 0; i < width * height * channels && texto_index < texto_len; i += channels)
    {
       unsigned char red = image_data[i];
@@ -52,21 +51,14 @@ void esconder_imagem(const char *texto, int width, int height, int channels, uns
          unsigned char metade2 = extract_bits(caractere, 2, 2);
          unsigned char metade3 = extract_bits(caractere, 4, 4);
 
-         // Adicionando pequena aleatoriedade aos bits modificados
          metade1 ^= (rand() % 4);
          metade2 ^= (rand() % 4);
          metade3 ^= (rand() % 16);
 
-         // Definir metade1 nos bits do canal vermelho
          red = set_bits(red, 0, 2, metade1);
-
-         // Definir metade2 nos bits do canal verde
          green = set_bits(green, 0, 2, metade2);
-
-         // Definir metade3 nos bits do canal azul
          blue = set_bits(blue, 0, 4, metade3);
 
-         // Atualizar os valores dos canais vermelho, verde e azul no pixel
          image_data[i] = red;
          image_data[i + 1] = green;
          image_data[i + 2] = blue;
@@ -92,16 +84,17 @@ int main()
       return 1;
    }
 
-   // Texto que você deseja esconder na imagem
-   const char *texto = "Mensagem secreta";
+   char *texto = new char[256];
+   cout << "Informe a mensagem que deseja esconder: ";
+   cin.getline(texto, 256);
 
    esconder_imagem(texto, width, height, channels, image_data);
 
-   // Salvar a imagem criptografada e liberar o espaço alocado na memória
+   // Salvar a imagem escondida e libera o espaço alocado na memória
    stbi_write_bmp("imagem_com_mensagem.bmp", width, height, channels, image_data);
    stbi_image_free(image_data);
 
-   cout << "Mensagem escondida na imagem" << endl;
+   cout << "Mensagem escondida na imagem!" << endl;
 
    return 0;
 }
